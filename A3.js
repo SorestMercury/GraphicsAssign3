@@ -119,7 +119,15 @@ scene.add(rightEyeSocket);
 // https://threejs.org/docs/index.html#api/en/geometries/CylinderGeometry
 // These could also be made with a two camera facing triangles or quads instead of a full blown cylinder.
 // The reason is that lasers have a simple geometry and don't have any fancy angle based shading (for now)
+const laserGeometry = new THREE.CylinderGeometry(0.15,0.15,1,32,1,false,0,Math.PI*2);
+const laserMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000}) 
+const leftLaser = new THREE.Mesh(laserGeometry,laserMaterial);
 
+const rightLaser = new THREE.Mesh();
+rightLaser.copy(leftLaser);
+
+scene.add(leftLaser);
+scene.add(rightLaser);
 
 // Listen to keyboard events.
 const keyboard = new THREEx.KeyboardState();
@@ -152,6 +160,34 @@ function update() {
 
   leftEyeSocket.lookAt(sphereOffset.value);
   rightEyeSocket.lookAt(sphereOffset.value);
+
+  const leftLaserLength = leftEyeSocketPos.distanceTo(sphereOffset.value);
+  const rightLaserLength = rightEyeSocket.position.distanceTo(sphereOffset.value);
+
+  if(leftLaserLength < LaserDistance || rightLaserLength < LaserDistance)
+  {
+    leftLaser.position.set(sphereOffset.value.x,sphereOffset.value.y,sphereOffset.value.z);
+    leftLaser.lookAt(leftEyeSocket.position);
+    leftLaser.rotateX(Math.PI/2);
+
+    leftLaser.scale.set(1,leftLaserLength,1);
+    leftLaser.translateY(leftLaserLength/2,0);
+
+    rightLaser.position.set(sphereOffset.value.x,sphereOffset.value.y,sphereOffset.value.z);
+    rightLaser.lookAt(rightEyeSocket.position);
+    rightLaser.rotateX(Math.PI/2);
+
+    rightLaser.scale.set(1,rightLaserLength,1);
+    rightLaser.translateY(rightLaserLength/2,0);
+  }
+
+  else
+  {
+    leftLaser.scale.set(0,0,0);
+    rightLaser.scale.set(0,0,0);
+  }
+
+  
   
   // Requests the next update call, this creates a loop
   requestAnimationFrame(update);
