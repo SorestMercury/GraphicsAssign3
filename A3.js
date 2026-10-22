@@ -64,6 +64,9 @@ new SourceLoader().load(shaderFiles, function (shaders) {
 // Load and place the dog geometry
 // Look at the definition of loadAndPlaceGLB in js/setup.js to familiarize yourself with how each parameter
 // affects the loaded object.
+let tailbone;
+let tailDefault;
+let doggy;
 
 // TODO: Load and place the dog geometry in GLB format, a simple example is provided
 loadAndPlaceGLB("glb/dog.glb", function (dog) {
@@ -73,6 +76,8 @@ loadAndPlaceGLB("glb/dog.glb", function (dog) {
       for (var i = 0; i < skeleton.bones.length; i++) {
         console.log(skeleton.bones[i].name);
         if (skeleton.bones[i].name == "Dog_Tail_01_02SHJnt_42") {
+          tailbone = skeleton.bones[i];
+          tailDefault = tailbone.rotation.clone();
            console.log("Tail bone found");
         }
       }
@@ -80,6 +85,7 @@ loadAndPlaceGLB("glb/dog.glb", function (dog) {
   });
   dog.scale.set(5, 5, 5);
   dog.position.set(0.0, 0.0, -8.0);
+  doggy = dog;
   scene.add(dog);
 });
 
@@ -153,6 +159,8 @@ function checkKeyboard() {
   );
 }
 
+let phase = 0;
+
 // Setup update callback
 function update() {
   // TODO: make necessary changes to implement gazing, the dog waving its tail, etc.
@@ -187,6 +195,33 @@ function update() {
     rightLaser.scale.set(0,0,0);
   }
 
+  if(tailbone && doggy)
+  {
+    const sphereXZ = new THREE.Vector2(doggy.position.x - sphereOffset.value.x, doggy.position.z - sphereOffset.value.z).length();
+    const delta = clock.getDelta();
+
+    if(sphereXZ < waveDistance)
+    {
+      const speed = 19 + waveDistance-sphereXZ;
+      const amplitutde = 0.6 + 0.1*(waveDistance-sphereXZ);
+      phase += delta * speed;
+
+      tailbone.rotation.x = tailDefault.x + Math.sin(phase) * amplitutde;
+      tailbone.rotation.y = tailDefault.y + (90*Math.PI/180);
+      tailbone.rotation.z = tailDefault.z + (70*Math.PI/180);
+    }
+
+    else
+    {
+      const speed = 2;
+      const amplitutde = 0.6;
+      phase += delta * speed;
+      tailbone.rotation.x = tailDefault.x + Math.sin(phase) * amplitutde;
+      tailbone.rotation.y = tailDefault.y + (90*Math.PI/180);
+      tailbone.rotation.z = tailDefault.z + (70*Math.PI/180);
+    }
+    
+  }
   
   
   // Requests the next update call, this creates a loop
