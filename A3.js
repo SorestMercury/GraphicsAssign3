@@ -174,15 +174,15 @@ function update() {
 
   if(leftLaserLength < LaserDistance || rightLaserLength < LaserDistance)
   {
-    leftLaser.position.set(sphereOffset.value.x,sphereOffset.value.y,sphereOffset.value.z);
-    leftLaser.lookAt(leftEyeSocket.position);
+    leftLaser.position.set(leftEyeSocket.position.x, leftEyeSocket.position.y,leftEyeSocket.position.z);
+    leftLaser.lookAt(sphereOffset.value.x,sphereOffset.value.y,sphereOffset.value.z);
     leftLaser.rotateX(Math.PI/2);
 
     leftLaser.scale.set(1,leftLaserLength,1);
     leftLaser.translateY(leftLaserLength/2,0);
 
-    rightLaser.position.set(sphereOffset.value.x,sphereOffset.value.y,sphereOffset.value.z);
-    rightLaser.lookAt(rightEyeSocket.position);
+    rightLaser.position.set(rightEyeSocket.position.x, rightEyeSocket.position.y,rightEyeSocket.position.z);
+    rightLaser.lookAt(sphereOffset.value.x,sphereOffset.value.y,sphereOffset.value.z);
     rightLaser.rotateX(Math.PI/2);
 
     rightLaser.scale.set(1,rightLaserLength,1);
@@ -209,6 +209,26 @@ function update() {
       tailbone.rotation.x = tailDefault.x + Math.sin(phase) * amplitutde;
       tailbone.rotation.y = tailDefault.y + (90*Math.PI/180);
       tailbone.rotation.z = tailDefault.z + (70*Math.PI/180);
+
+      const leftLaserLength = leftEyeSocketPos.distanceTo(sphereOffset.value);
+      const rightLaserLength = rightEyeSocket.position.distanceTo(sphereOffset.value);
+
+      leftLaser.position.set(leftEyeSocket.position.x, leftEyeSocket.position.y,leftEyeSocket.position.z);
+      leftLaser.lookAt(camera.position);
+      leftLaser.rotateX(Math.PI/2);
+
+      leftLaser.scale.set(1,leftLaserLength,1);
+      leftLaser.translateY(leftLaserLength/2,0);
+
+      rightLaser.position.set(rightEyeSocket.position.x, rightEyeSocket.position.y,rightEyeSocket.position.z);
+      rightLaser.lookAt(camera.position);
+      rightLaser.rotateX(Math.PI/2);
+
+      rightLaser.scale.set(1,rightLaserLength,1);
+      rightLaser.translateY(rightLaserLength/2,0);
+
+      leftEyeSocket.lookAt(camera.position);
+      rightEyeSocket.lookAt(camera.position);
     }
 
     else
